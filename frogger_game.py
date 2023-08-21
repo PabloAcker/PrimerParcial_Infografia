@@ -8,31 +8,18 @@ class Frog(arcade.Sprite):
         super().__init__(image, 1)
         self.center_x = x
         self.center_y = y
+        self.speed = 0
 
     def update(self):
         # Control de movimiento de la rana
-        if arcade.key.LEFT in arcade.get_keys():
-            self.center_x -= PLAYER_SPEED
-        if arcade.key.RIGHT in arcade.get_keys():
-            self.center_x += PLAYER_SPEED
-        if arcade.key.UP in arcade.get_keys():
-            self.center_y += PLAYER_SPEED
-        if arcade.key.DOWN in arcade.get_keys():
-            self.center_y -= PLAYER_SPEED
+        self.center_x += self.speed
+        self.center_y += self.speed
 
 class Obstacle(arcade.Sprite):
     def __init__(self, image, x, y):
         super().__init__(image, 1)
         self.center_x = x
         self.center_y = y
-
-    def setup_obstacles():
-        obstacles = arcade.SpriteList()
-        # Crear obstáculos y agregarlos a la lista
-        for i in range(5):
-            obstacle = Obstacle("imagenes/auto.png",i * 150 + 75, 100)
-            obstacles.append(obstacle)
-        return obstacles
 
 class FroggerGame:
     def __init__(self):
@@ -41,19 +28,27 @@ class FroggerGame:
 
     def setup(self):
         self.player = Frog("imagenes/frog2.png", 400, 50)
-        self.obstacles = Obstacle("imagenes/frog2.png", 500, 100)
+        self.obstacles = arcade.SpriteList()
+        # Crear obstáculos y agregarlos a la lista
+        for i in range(5):
+            obstacle = Obstacle("imagenes/auto.png", i * 150 + 75, 100)
+            self.obstacles.append(obstacle)
 
     def update(self, delta_time):
         self.player.update()
         # Actualizar los obstáculos
-        self.obstacles.setup_obstacles()
+        self.obstacles.update()
 
     def draw(self):
         self.player.draw()
         self.obstacles.draw()
 
     def on_key_press(self, symbol, modifiers):
-        pass
+        if symbol in (arcade.key.UP, arcade.key.RIGHT):
+            self.player.speed = PLAYER_SPEED
+        if symbol in (arcade.key.DOWN, arcade.key.LEFT):
+            self.player.speed = -PLAYER_SPEED
 
     def on_key_release(self, symbol, modifiers):
-        pass
+        if symbol in (arcade.key.UP, arcade.key.DOWN, arcade.key.LEFT, arcade.key.RIGHT):
+            self.player.speed = 0

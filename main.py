@@ -11,28 +11,24 @@ class App(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         arcade.set_background_color(arcade.color.LIGHT_GREEN)
-        self.sprites = arcade.SpriteList()
+        self.game = FroggerGame()
+        self.game.setup()
 
     def on_draw(self):
         arcade.start_render()
-        self.sprites.draw() #TODO poner a los enemigos pero ver si es con un for
+        self.game.draw()
 
     def on_update(self, delta_time: float):
-        self.sprites.update() #TODO cambiar esta linea y ver la logica de deteccion de enemigos del tank (poner enemigos en la lista de sprites)
-    def on_key_press(self, symbol: int, modifiers: int):
-        if symbol in (arcade.key.UP, arcade.key.RIGHT):
-            self.frog.speed = SPEED
+        self.game.update(delta_time)
 
-        if symbol in (self, arcade.key.DOWN, arcade.key.LEFT): 
-            self.frog.speed = -SPEED
+    def on_key_press(self, symbol: int, modifiers: int):
+        self.game.on_key_press(symbol, modifiers)
 
     def on_key_release(self, symbol: int, modifiers: int):
-        if symbol in (arcade.key.UP, arcade.key.DOWN, arcade.key.LEFT, arcade.key.RIGHT):
-            self.frog.speed = 0
+        self.game.on_key_release(symbol, modifiers)
 
 def main():
-    app = FroggerGame()
-    app.setup()
+    app = App()
     arcade.run()
 
 if __name__ == "__main__":
