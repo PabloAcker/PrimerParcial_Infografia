@@ -41,12 +41,12 @@ class FroggerGame:
 
     def setup(self):
         self.player = Frog("imagenes/frog2.png", 400, 50)
-        self.obstacles = setup_obstacles()
+        self.obstacles = Obstacle("imagenes/frog2.png", 500, 100)
 
     def update(self, delta_time):
         self.player.update()
         # Actualizar los obstáculos
-        self.obstacles.update()
+        self.obstacles.setup_obstacles()
 
     def draw(self):
         self.player.draw()
