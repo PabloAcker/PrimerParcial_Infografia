@@ -4,8 +4,8 @@ import arcade
 PLAYER_SPEED = 5
 
 class Frog(arcade.Sprite):
-    def __init__(self, x, y):
-        super().__init__("frog.png")
+    def __init__(self, image: str, x, y):
+        super().__init__(image, 1)
         self.center_x = x
         self.center_y = y
 
@@ -21,18 +21,18 @@ class Frog(arcade.Sprite):
             self.center_y -= PLAYER_SPEED
 
 class Obstacle(arcade.Sprite):
-    def __init__(self, x, y):
-        super().__init__("car.png")
+    def __init__(self, image, x, y):
+        super().__init__(image, 1)
         self.center_x = x
         self.center_y = y
 
-def setup_obstacles():
-    obstacles = arcade.SpriteList()
-    # Crear obstáculos y agregarlos a la lista
-    for i in range(5):
-        obstacle = Obstacle(i * 150 + 75, 100)
-        obstacles.append(obstacle)
-    return obstacles
+    def setup_obstacles():
+        obstacles = arcade.SpriteList()
+        # Crear obstáculos y agregarlos a la lista
+        for i in range(5):
+            obstacle = Obstacle("imagenes/auto.png",i * 150 + 75, 100)
+            obstacles.append(obstacle)
+        return obstacles
 
 class FroggerGame:
     def __init__(self):
@@ -40,7 +40,7 @@ class FroggerGame:
         self.obstacles = None
 
     def setup(self):
-        self.player = Frog(400, 50)
+        self.player = Frog("imagenes/frog2.png", 400, 50)
         self.obstacles = setup_obstacles()
 
     def update(self, delta_time):
