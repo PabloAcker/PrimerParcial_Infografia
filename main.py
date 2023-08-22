@@ -71,15 +71,31 @@ class FroggerGame(arcade.Window):
         self.player_sprite.update()
         self.enemy_sprites.update()
 
-        # Verificar colisiones entre la rana y los enemigos
-        for enemy in self.enemy_sprites:
-            if arcade.check_for_collision(self.player_sprite, enemy):
-                self.player_sprite.change_image(4)  # Cambiar a la imagen de colisión
-                self.player_sprite.collided = True
-                self.player_sprite.collided_time = time.time()
-                self.lives -= 1
-                #if self.lives <= 0:
-                 #   self.player_sprite.remove_from_sprite_lists()
+        if not self.player_sprite.collided:
+            # Verificar colisiones entre la rana y los enemigos
+            for enemy in self.enemy_sprites:
+                if arcade.check_for_collision(self.player_sprite, enemy):
+                    self.player_sprite.change_image(4)  # Cambiar a la imagen de colisión
+                    self.player_sprite.collided = True
+                    self.player_sprite.collided_time = time.time()
+                    self.lives -= 1
+
+                    # implementacion para que la rana desaparezca cuando llegue la vida a cero
+                    #if self.lives <= 0:
+                    #    self.player_sprite.remove_from_sprite_lists()
+                    
+                    break  # Salir del bucle una vez que se encuentre una colisión
+
+        # Restablecer la rana a las coordenadas de inicio si ha pasado el tiempo suficiente
+        if self.player_sprite.collided and time.time() - self.player_sprite.collided_time >= 1:
+            self.player_sprite.center_x = 400
+            self.player_sprite.center_y = 30
+            self.player_sprite.change_image(0)  # Cambiar a la imagen original (hacia arriba)
+            self.player_sprite.collided = False
+
+        # Restablecer el estado de la rana al volver a las coordenadas de inicio
+        if not self.player_sprite.collided and self.player_sprite.center_x == 400 and self.player_sprite.center_y == 30:
+            self.player_sprite.returned_to_start = True
 
 def main():
     game = FroggerGame()

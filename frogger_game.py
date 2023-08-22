@@ -13,7 +13,7 @@ class Frog(arcade.Sprite):
         self.collided = False
         self.collided_time = 0
 
-        
+        self.returned_to_start = True  # Inicialmente, la rana está en las coordenadas de inicio
 
         # Cargar las texturas de las imágenes
         self.textures = [arcade.load_texture(image_path) for image_path in self.image_paths]
@@ -60,6 +60,7 @@ class Frog(arcade.Sprite):
             self.change_image(0)  # Cambiar a la imagen original (hacia arriba)
             self.collided = False
             self.collided_time = 0
+            self.returned_to_start = True  # La rana regresó a las coordenadas de inicio
 
 class Enemy(arcade.Sprite):
     def __init__(self, image_path, scale, initial_x, initial_y, speed):
