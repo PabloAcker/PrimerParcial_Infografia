@@ -1,54 +1,65 @@
 import arcade
 
-# Definición de constantes
-PLAYER_SPEED = 5
-
 class Frog(arcade.Sprite):
-    def __init__(self, image: str, x, y):
-        super().__init__(image, 1)
-        self.center_x = x
-        self.center_y = y
-        self.speed = 0
+    def __init__(self, image_paths, scale, initial_x, initial_y):
+        super().__init__(image_paths[0], scale)
+        self.center_x = initial_x
+        self.center_y = initial_y  # Posición inicial en el medio inferior
+        self.moving = False
+        self.image_paths = image_paths
+        self.current_image_index = 0
+
+        # Cargar las texturas de las imágenes
+        self.textures = [arcade.load_texture(image_path) for image_path in self.image_paths]
+
+    def change_image(self, index):
+        self.set_texture(index)
+        self.current_image_index = index
+
+    def move_up(self):
+        if not self.moving:
+            self.center_y += self.height
+            self.change_image(0)  # Cambiar a la imagen para mover hacia arriba
+            self.moving = True
+
+    def move_down(self):
+        if not self.moving:
+            self.center_y -= self.height
+            self.change_image(1)  # Cambiar a la imagen para mover hacia abajo
+            self.moving = True
+
+    def move_left(self):
+        if not self.moving:
+            self.center_x -= self.width
+            self.change_image(2)  # Cambiar a la imagen para mover hacia la izquierda
+            self.moving = True
+
+    def move_right(self):
+        if not self.moving:
+            self.center_x += self.width
+            self.change_image(3)  # Cambiar a la imagen para mover hacia la derecha
+            self.moving = True
+
+    def stop_moving(self):
+        self.moving = False
 
     def update(self):
-        # Control de movimiento de la rana
+        # Movimiento y límites de la ventana
+        self.center_x = max(self.width // 2, min(arcade.get_window().width - self.width // 2, self.center_x + self.change_x))
+        self.center_y = max(self.height // 2, min(arcade.get_window().height - self.height // 2, self.center_y + self.change_y))
+
+class Enemy(arcade.Sprite):
+    def __init__(self, image_path, scale, initial_x, initial_y, speed):
+        super().__init__(image_path, scale)
+        self.center_x = initial_x
+        self.center_y = initial_y
+        self.speed = speed  # Velocidad del enemigo
+
+    def update(self):
+        # Mueve al enemigo a la derecha y reinicia su posición cuando llega al borde derecho
+        # Mueve al enemigo a la izquierda y reinicia su posición cuando llega al borde izquierdo
         self.center_x += self.speed
-        self.center_y += self.speed
-
-class Obstacle(arcade.Sprite):
-    def __init__(self, image, x, y):
-        super().__init__(image, 1)
-        self.center_x = x
-        self.center_y = y
-
-class FroggerGame:
-    def __init__(self):
-        self.player = None
-        self.obstacles = None
-
-    def setup(self):
-        self.player = Frog("imagenes/frog2.png", 400, 50)
-        self.obstacles = arcade.SpriteList()
-        # Crear obstáculos y agregarlos a la lista
-        for i in range(5):
-            obstacle = Obstacle("imagenes/auto.png", i * 150 + 75, 100)
-            self.obstacles.append(obstacle)
-
-    def update(self, delta_time):
-        self.player.update()
-        # Actualizar los obstáculos
-        self.obstacles.update()
-
-    def draw(self):
-        self.player.draw()
-        self.obstacles.draw()
-
-    def on_key_press(self, symbol, modifiers):
-        if symbol in (arcade.key.UP, arcade.key.RIGHT):
-            self.player.speed = PLAYER_SPEED
-        if symbol in (arcade.key.DOWN, arcade.key.LEFT):
-            self.player.speed = -PLAYER_SPEED
-
-    def on_key_release(self, symbol, modifiers):
-        if symbol in (arcade.key.UP, arcade.key.DOWN, arcade.key.LEFT, arcade.key.RIGHT):
-            self.player.speed = 0
+        if self.speed > 0 and self.center_x > arcade.get_window().width + self.width // 2:
+            self.center_x = -self.width // 2
+        elif self.speed < 0 and self.center_x < -self.width // 2:
+            self.center_x = arcade.get_window().width + self.width // 2
