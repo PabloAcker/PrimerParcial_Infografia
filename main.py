@@ -42,14 +42,20 @@ class FroggerGame(arcade.Window):
         # Dibuja el fondo de la imagen
         arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
 
-        # Dibuja al jugador (rana)
-        self.player_sprite.draw()
+        if self.lives > 0:
+            # Dibuja al jugador (rana)
+            self.player_sprite.draw()
 
-        # Dibuja a los enemigos
-        self.enemy_sprites.draw()
+            # Dibuja a los enemigos
+            self.enemy_sprites.draw()
 
-        # Dibuja el contador de vidas
-        arcade.draw_text(f"VIDAS: {self.lives}", 10, 420, arcade.color.BLACK, 14)
+            # Dibuja el contador de vidas
+            arcade.draw_text(f"VIDAS: {self.lives}", 10, 420, arcade.color.BLACK, 14)
+        else:
+            # Dibuja la imagen cuando las vidas llegan a cero
+            game_over_image = arcade.load_texture("imagenes/game_over.png")
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 300, 300, game_over_image)
+
 
     def on_key_press(self, key, modifiers):
         if not self.player_sprite.collided and self.lives > 0:  # Verifica si la rana ha colisionado y que tenga vidas
@@ -83,7 +89,7 @@ class FroggerGame(arcade.Window):
                     # implementacion para que la rana desaparezca cuando llegue la vida a cero
                     #if self.lives <= 0:
                     #    self.player_sprite.remove_from_sprite_lists()
-                    
+
                     break  # Salir del bucle una vez que se encuentre una colisión
 
         # Restablecer la rana a las coordenadas de inicio si ha pasado el tiempo suficiente
