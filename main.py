@@ -12,10 +12,9 @@ class FroggerGame(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         self.background = arcade.load_texture("imagenes/fondo.PNG")
-        self.player_sprite = Frog(["imagenes/frog_arriba.png", "imagenes/frog_abajo.png", "imagenes/frog_izquierda.png", "imagenes/frog_derecha.png", "imagenes/frog_aplastada.png"], scale=0.11, initial_x=400, initial_y=30, game=self)
+        self.player_sprite = Frog(["imagenes/frog_arriba.png", "imagenes/frog_abajo.png", "imagenes/frog_izquierda.png", "imagenes/frog_derecha.png", "imagenes/frog_aplastada.png"], scale=0.11, initial_x=400, initial_y=30)
 
         self.lives = NUM_LIVES
-        #self.font = arcade.load_font("fonts/arial.ttf", 36)
 
         self.enemy_sprites = arcade.SpriteList()
         enemy_image_path = "imagenes/auto2.png"  
@@ -50,7 +49,7 @@ class FroggerGame(arcade.Window):
         self.enemy_sprites.draw()
 
         # Dibuja el contador de vidas
-        arcade.draw_text(f"VIDAS: {self.lives}", SCREEN_WIDTH - 10, SCREEN_HEIGHT - 10, arcade.color.WHITE, 14, font_name="arial")
+        arcade.draw_text(f"VIDAS: {self.lives}", 10, 420, arcade.color.BLACK, 14)
 
     def on_key_press(self, key, modifiers):
         if not self.player_sprite.collided and self.lives > 0:  # Verifica si la rana ha colisionado y que tenga vidas
@@ -79,8 +78,8 @@ class FroggerGame(arcade.Window):
                 self.player_sprite.collided = True
                 self.player_sprite.collided_time = time.time()
                 self.lives -= 1
-                if self.lives <= 0:
-                    self.player_sprite.remove_from_sprite_lists()
+                #if self.lives <= 0:
+                 #   self.player_sprite.remove_from_sprite_lists()
 
 def main():
     game = FroggerGame()

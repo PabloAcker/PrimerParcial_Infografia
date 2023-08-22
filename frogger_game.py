@@ -2,17 +2,18 @@ import arcade
 import time
 
 class Frog(arcade.Sprite):
-    def __init__(self, image_paths, scale, initial_x, initial_y, game):
+    def __init__(self, image_paths, scale, initial_x, initial_y):
         super().__init__(image_paths[0], scale)
         self.center_x = initial_x
         self.center_y = initial_y  # Posición inicial en el medio inferior
         self.moving = False
         self.image_paths = image_paths
         self.current_image_index = 0
-        self.game = game
 
         self.collided = False
         self.collided_time = 0
+
+        
 
         # Cargar las texturas de las imágenes
         self.textures = [arcade.load_texture(image_path) for image_path in self.image_paths]
@@ -54,10 +55,9 @@ class Frog(arcade.Sprite):
         self.center_y = max(self.height // 2, min(arcade.get_window().height - self.height // 2, self.center_y + self.change_y))
 
         if self.collided and time.time() - self.collided_time >= 1:
-            if self.game.lives > 0:
-                self.center_x = 400
-                self.center_y = 30
-                self.change_image(0)  # Cambiar a la imagen original (hacia arriba)
+            self.center_x = 400
+            self.center_y = 30
+            self.change_image(0)  # Cambiar a la imagen original (hacia arriba)
             self.collided = False
             self.collided_time = 0
 
