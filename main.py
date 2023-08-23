@@ -22,6 +22,11 @@ class FroggerGame(arcade.Window):
 
         self.timer = 40  # Tiempo en segundos
 
+        # Cargar sonidos
+        self.general_sound = arcade.load_sound("sonidos/general.mp3")
+        self.jump_sound = arcade.load_sound("sonidos/salto.mp3")
+        self.coin_sound = arcade.load_sound("sonidos/moneda.mp3")
+
         self.enemy_sprites = arcade.SpriteList()
         enemy_image_path = "imagenes/auto2.png"  
         enemy_image_path2 = "imagenes/auto.png"
@@ -91,12 +96,16 @@ class FroggerGame(arcade.Window):
         if not self.player_sprite.collided and self.lives > 0:  # Verifica si la rana ha colisionado y que tenga vidas
         # Control de movimiento al presionar las teclas de flecha
             if key == arcade.key.UP:
+                arcade.play_sound(self.jump_sound)
                 self.player_sprite.move_up()
             elif key == arcade.key.DOWN:
+                arcade.play_sound(self.jump_sound)
                 self.player_sprite.move_down()
             elif key == arcade.key.LEFT:
+                arcade.play_sound(self.jump_sound)
                 self.player_sprite.move_left()
             elif key == arcade.key.RIGHT:
+                arcade.play_sound(self.jump_sound)
                 self.player_sprite.move_right()
 
     def on_key_release(self, key, modifiers):
@@ -150,6 +159,7 @@ class FroggerGame(arcade.Window):
                     self.coin_count += 1
                     coins_to_remove.append(coin)
                     self.coin_collided_time = time.time()  # Actualiza el tiempo de colisión con la moneda
+                    arcade.play_sound(self.coin_sound)  # Reproduce el sonido al conseguir una moneda
 
             for coin in coins_to_remove:
                 coin.remove_from_sprite_lists()
@@ -157,6 +167,10 @@ class FroggerGame(arcade.Window):
             # Mostrar la imagen de victoria si se recogen todas las monedas
             if self.coin_count == 4:
                 self.show_victory = True
+
+            # Reproducir el general_sound
+            #arcade.play_sound(self.general_sound)
+            #self.general_sound.set_volume(0.1, self.player_sprite)
 
 def main():
     game = FroggerGame()
