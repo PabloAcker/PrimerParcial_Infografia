@@ -1,5 +1,6 @@
 import arcade
 import time
+import pyglet
 from frogger_game import Frog, Enemy
 
 SCREEN_WIDTH = 800
@@ -22,10 +23,20 @@ class FroggerGame(arcade.Window):
 
         self.timer = 40  # Tiempo en segundos
 
+        self.general_sound_volume = 0.05  # Ajusta el volumen aquí (de 0 a 1)
+
         # Cargar sonidos
-        self.general_sound = arcade.load_sound("sonidos/general.mp3")
+        self.general_sound = pyglet.media.load("sonidos/general.mp3")
+        self.general_sound_player = None  # Variable para el reproductor de sonido
         self.jump_sound = arcade.load_sound("sonidos/salto.mp3")
         self.coin_sound = arcade.load_sound("sonidos/moneda.mp3")
+
+        self.general_sound_player = pyglet.media.Player()  # Inicializar el reproductor de sonido
+        self.general_sound_player.queue(self.general_sound)  # Colocar el sonido en la cola
+        self.general_sound_player.volume = self.general_sound_volume  # Ajustar el volumen
+
+        # Reproducir el general_sound
+        self.general_sound_player.play()
 
         self.enemy_sprites = arcade.SpriteList()
         enemy_image_path = "imagenes/auto2.png"  
@@ -167,10 +178,6 @@ class FroggerGame(arcade.Window):
             # Mostrar la imagen de victoria si se recogen todas las monedas
             if self.coin_count == 4:
                 self.show_victory = True
-
-            # Reproducir el general_sound
-            #arcade.play_sound(self.general_sound)
-            #self.general_sound.set_volume(0.1, self.player_sprite)
 
 def main():
     game = FroggerGame()
