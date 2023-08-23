@@ -18,6 +18,8 @@ class FroggerGame(arcade.Window):
 
         self.show_victory = False
 
+        self.coin_collided_time = 0
+
         self.enemy_sprites = arcade.SpriteList()
         enemy_image_path = "imagenes/auto2.png"  
         enemy_image_path2 = "imagenes/auto.png"
@@ -72,6 +74,9 @@ class FroggerGame(arcade.Window):
 
                 # Dibuja el contador de vidas
                 arcade.draw_text(f"VIDAS: {self.lives}", 10, 420, arcade.color.BLACK, 14)
+
+                # Dibuja el contador de monedas
+                arcade.draw_text(f"NENUFARES: {self.coin_count}", 10, 385, arcade.color.BLACK, 14)
             else:
                 # Dibuja la imagen cuando las vidas llegan a cero
                 game_over_image = arcade.load_texture("imagenes/game_over.png")
@@ -119,6 +124,13 @@ class FroggerGame(arcade.Window):
             self.player_sprite.change_image(0)  # Cambiar a la imagen original (hacia arriba)
             self.player_sprite.collided = False
 
+        # Restablecer la rana a las coordenadas de inicio después de tomar una moneda
+        if self.coin_collided_time != 0 and time.time() - self.coin_collided_time >= 0.05:
+            self.player_sprite.center_x = 400
+            self.player_sprite.center_y = 30
+            self.player_sprite.change_image(0)  # Cambiar a la imagen original (hacia arriba)
+            self.coin_collided_time = 0
+
         # Restablecer el estado de la rana al volver a las coordenadas de inicio
         if not self.player_sprite.collided and self.player_sprite.center_x == 400 and self.player_sprite.center_y == 30:
             self.player_sprite.returned_to_start = True
@@ -129,6 +141,7 @@ class FroggerGame(arcade.Window):
             if arcade.check_for_collision(self.player_sprite, coin):
                 self.coin_count += 1
                 coins_to_remove.append(coin)
+                self.coin_collided_time = time.time()  # Actualiza el tiempo de colisión con la moneda
 
         for coin in coins_to_remove:
             coin.remove_from_sprite_lists()
