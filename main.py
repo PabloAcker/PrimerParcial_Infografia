@@ -16,6 +16,8 @@ class FroggerGame(arcade.Window):
 
         self.lives = NUM_LIVES
 
+        self.show_victory = False
+
         self.enemy_sprites = arcade.SpriteList()
         enemy_image_path = "imagenes/auto2.png"  
         enemy_image_path2 = "imagenes/auto.png"
@@ -37,25 +39,43 @@ class FroggerGame(arcade.Window):
         
         self.enemy_sprites.extend([enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7, enemy8])
 
+        # Agregar monedas
+        self.coin_sprites = arcade.SpriteList()
+        coin_image_paths = ["imagenes/nenufar_win.png", "imagenes/nenufar_win.png", "imagenes/nenufar_win.png", "imagenes/nenufar_win.png"]
+        coin_positions = [(95, 710), (310, 710), (510, 710), (700, 710)]
+
+        for path, (x, y) in zip(coin_image_paths, coin_positions):
+            coin = arcade.Sprite(path, scale=0.07, center_x=x, center_y=y)
+            self.coin_sprites.append(coin)
+        
+        # Contador de monedas
+        self.coin_count = 0
+
     def on_draw(self):
         arcade.start_render()
         # Dibuja el fondo de la imagen
         arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
 
-        if self.lives > 0:
-            # Dibuja al jugador (rana)
-            self.player_sprite.draw()
-
-            # Dibuja a los enemigos
-            self.enemy_sprites.draw()
-
-            # Dibuja el contador de vidas
-            arcade.draw_text(f"VIDAS: {self.lives}", 10, 420, arcade.color.BLACK, 14)
+        if self.coin_count == 4:
+            victory_image = arcade.load_texture("imagenes/win.png")
+            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 300, 300, victory_image)
         else:
-            # Dibuja la imagen cuando las vidas llegan a cero
-            game_over_image = arcade.load_texture("imagenes/game_over.png")
-            arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 300, 300, game_over_image)
+            if self.lives > 0:
+                # Dibuja al jugador (rana)
+                self.player_sprite.draw()
 
+                # Dibuja a los enemigos
+                self.enemy_sprites.draw()
+
+                # Dibuja las monedas
+                self.coin_sprites.draw()
+
+                # Dibuja el contador de vidas
+                arcade.draw_text(f"VIDAS: {self.lives}", 10, 420, arcade.color.BLACK, 14)
+            else:
+                # Dibuja la imagen cuando las vidas llegan a cero
+                game_over_image = arcade.load_texture("imagenes/game_over.png")
+                arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 300, 300, game_over_image)
 
     def on_key_press(self, key, modifiers):
         if not self.player_sprite.collided and self.lives > 0:  # Verifica si la rana ha colisionado y que tenga vidas
@@ -102,6 +122,20 @@ class FroggerGame(arcade.Window):
         # Restablecer el estado de la rana al volver a las coordenadas de inicio
         if not self.player_sprite.collided and self.player_sprite.center_x == 400 and self.player_sprite.center_y == 30:
             self.player_sprite.returned_to_start = True
+
+        # Verificar colisiones entre la rana y las monedas
+        coins_to_remove = []
+        for coin in self.coin_sprites:
+            if arcade.check_for_collision(self.player_sprite, coin):
+                self.coin_count += 1
+                coins_to_remove.append(coin)
+
+        for coin in coins_to_remove:
+            coin.remove_from_sprite_lists()
+
+        # Mostrar la imagen de victoria si se recogen todas las monedas
+        if self.coin_count == 4:
+            self.show_victory = True
 
 def main():
     game = FroggerGame()
