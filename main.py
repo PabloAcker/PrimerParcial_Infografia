@@ -20,6 +20,8 @@ class FroggerGame(arcade.Window):
 
         self.coin_collided_time = 0
 
+        self.timer = 40  # Tiempo en segundos
+
         self.enemy_sprites = arcade.SpriteList()
         enemy_image_path = "imagenes/auto2.png"  
         enemy_image_path2 = "imagenes/auto.png"
@@ -77,6 +79,9 @@ class FroggerGame(arcade.Window):
 
                 # Dibuja el contador de monedas
                 arcade.draw_text(f"NENUFARES: {self.coin_count}", 10, 385, arcade.color.BLACK, 14)
+
+                # Dibuja el tiempo restante
+                arcade.draw_text(f"Tiempo restante: {int(self.timer)}", 610, 420, arcade.color.BLACK, 14)
             else:
                 # Dibuja la imagen cuando las vidas llegan a cero
                 game_over_image = arcade.load_texture("imagenes/game_over.png")
@@ -99,56 +104,64 @@ class FroggerGame(arcade.Window):
         self.player_sprite.stop_moving()
 
     def on_update(self, delta_time):
-        self.player_sprite.update()
-        self.enemy_sprites.update()
+        self.timer -= delta_time  # Restar el tiempo transcurrido al temporizador
 
-        if not self.player_sprite.collided:
-            # Verificar colisiones entre la rana y los enemigos
-            for enemy in self.enemy_sprites:
-                if arcade.check_for_collision(self.player_sprite, enemy):
-                    self.player_sprite.change_image(4)  # Cambiar a la imagen de colisión
-                    self.player_sprite.collided = True
-                    self.player_sprite.collided_time = time.time()
-                    self.lives -= 1
+        if self.timer <= 0:
+            # Mostrar la pantalla de game_over
+            self.timer = 0  # Asegurarse de que el temporizador no sea negativo
+            self.lives = 0  # Establecer vidas en 0 para mostrar game_over
+        else:
+            self.player_sprite.update()
+            self.enemy_sprites.update()
+            self.coin_sprites.update()
 
-                    # implementacion para que la rana desaparezca cuando llegue la vida a cero
-                    #if self.lives <= 0:
-                    #    self.player_sprite.remove_from_sprite_lists()
+            if not self.player_sprite.collided:
+                # Verificar colisiones entre la rana y los enemigos
+                for enemy in self.enemy_sprites:
+                    if arcade.check_for_collision(self.player_sprite, enemy):
+                        self.player_sprite.change_image(4)  # Cambiar a la imagen de colisión
+                        self.player_sprite.collided = True
+                        self.player_sprite.collided_time = time.time()
+                        self.lives -= 1
 
-                    break  # Salir del bucle una vez que se encuentre una colisión
+                        # implementacion para que la rana desaparezca cuando llegue la vida a cero
+                        #if self.lives <= 0:
+                        #    self.player_sprite.remove_from_sprite_lists()
 
-        # Restablecer la rana a las coordenadas de inicio si ha pasado el tiempo suficiente
-        if self.player_sprite.collided and time.time() - self.player_sprite.collided_time >= 1:
-            self.player_sprite.center_x = 400
-            self.player_sprite.center_y = 30
-            self.player_sprite.change_image(0)  # Cambiar a la imagen original (hacia arriba)
-            self.player_sprite.collided = False
+                        break  # Salir del bucle una vez que se encuentre una colisión
 
-        # Restablecer la rana a las coordenadas de inicio después de tomar una moneda
-        if self.coin_collided_time != 0 and time.time() - self.coin_collided_time >= 0.05:
-            self.player_sprite.center_x = 400
-            self.player_sprite.center_y = 30
-            self.player_sprite.change_image(0)  # Cambiar a la imagen original (hacia arriba)
-            self.coin_collided_time = 0
+            # Restablecer la rana a las coordenadas de inicio si ha pasado el tiempo suficiente
+            if self.player_sprite.collided and time.time() - self.player_sprite.collided_time >= 1:
+                self.player_sprite.center_x = 400
+                self.player_sprite.center_y = 30
+                self.player_sprite.change_image(0)  # Cambiar a la imagen original (hacia arriba)
+                self.player_sprite.collided = False
 
-        # Restablecer el estado de la rana al volver a las coordenadas de inicio
-        if not self.player_sprite.collided and self.player_sprite.center_x == 400 and self.player_sprite.center_y == 30:
-            self.player_sprite.returned_to_start = True
+            # Restablecer la rana a las coordenadas de inicio después de tomar una moneda
+            if self.coin_collided_time != 0 and time.time() - self.coin_collided_time >= 0.05:
+                self.player_sprite.center_x = 400
+                self.player_sprite.center_y = 30
+                self.player_sprite.change_image(0)  # Cambiar a la imagen original (hacia arriba)
+                self.coin_collided_time = 0
 
-        # Verificar colisiones entre la rana y las monedas
-        coins_to_remove = []
-        for coin in self.coin_sprites:
-            if arcade.check_for_collision(self.player_sprite, coin):
-                self.coin_count += 1
-                coins_to_remove.append(coin)
-                self.coin_collided_time = time.time()  # Actualiza el tiempo de colisión con la moneda
+            # Restablecer el estado de la rana al volver a las coordenadas de inicio
+            if not self.player_sprite.collided and self.player_sprite.center_x == 400 and self.player_sprite.center_y == 30:
+                self.player_sprite.returned_to_start = True
 
-        for coin in coins_to_remove:
-            coin.remove_from_sprite_lists()
+            # Verificar colisiones entre la rana y las monedas
+            coins_to_remove = []
+            for coin in self.coin_sprites:
+                if arcade.check_for_collision(self.player_sprite, coin):
+                    self.coin_count += 1
+                    coins_to_remove.append(coin)
+                    self.coin_collided_time = time.time()  # Actualiza el tiempo de colisión con la moneda
 
-        # Mostrar la imagen de victoria si se recogen todas las monedas
-        if self.coin_count == 4:
-            self.show_victory = True
+            for coin in coins_to_remove:
+                coin.remove_from_sprite_lists()
+
+            # Mostrar la imagen de victoria si se recogen todas las monedas
+            if self.coin_count == 4:
+                self.show_victory = True
 
 def main():
     game = FroggerGame()
