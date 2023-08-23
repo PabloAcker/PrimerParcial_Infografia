@@ -43,7 +43,7 @@ class FroggerGame(arcade.Window):
         
         self.enemy_sprites.extend([enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7, enemy8])
 
-        # Agregar monedas
+        # Agregar nenúfares (analogía de ejemplo: monedas)
         self.coin_sprites = arcade.SpriteList()
         coin_image_paths = ["imagenes/nenufar_win.png", "imagenes/nenufar_win.png", "imagenes/nenufar_win.png", "imagenes/nenufar_win.png"]
         coin_positions = [(95, 710), (310, 710), (510, 710), (700, 710)]
@@ -123,11 +123,6 @@ class FroggerGame(arcade.Window):
                         self.player_sprite.collided = True
                         self.player_sprite.collided_time = time.time()
                         self.lives -= 1
-
-                        # implementacion para que la rana desaparezca cuando llegue la vida a cero
-                        #if self.lives <= 0:
-                        #    self.player_sprite.remove_from_sprite_lists()
-
                         break  # Salir del bucle una vez que se encuentre una colisión
 
             # Restablecer la rana a las coordenadas de inicio si ha pasado el tiempo suficiente

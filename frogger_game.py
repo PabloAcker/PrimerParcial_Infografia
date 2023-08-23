@@ -77,3 +77,4 @@ class Enemy(arcade.Sprite):
             self.center_x = -self.width // 2
         elif self.speed < 0 and self.center_x < -self.width // 2:
             self.center_x = arcade.get_window().width + self.width // 2
+            
